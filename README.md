@@ -10,6 +10,7 @@ This repository contains practical assignment projects for the **Object-Oriented
 
 | Package | Core OOP Topic | Description |
 | :--- | :--- | :--- |
+| **`SmartGreenHouse`** | **Abstract Class & Interface** | Smart greenhouse automation system simulating irrigation, ventilation, grow lighting, and temperature sensors using abstract classes, interfaces, inheritance, and polymorphism. |
 | **`BankSystem`** | **Array & ArrayList of Objects** | Bank customer and account management using fixed-size arrays and dynamic list manipulation (`ArrayList`). |
 | **`Shapes`** | **Encapsulation, Inheritance, & Polymorphism** | 2D and 3D geometric shape hierarchy implementing the three fundamental pillars of OOP. |
 | **`BangunDatar`** | **Class, Constructor Overloading, & Methods** | 2D shape perimeter and area calculations with overloaded constructors. |
@@ -18,7 +19,127 @@ This repository contains practical assignment projects for the **Object-Oriented
 
 ---
 
-## 1. Package `BankSystem` (Topic: Array & ArrayList)
+## 1. Package `SmartGreenHouse` (Topic: Abstract Class & Interface)
+
+This package models a **Smart Greenhouse Automation System** designed to monitor and automate environmental control devices (irrigation, ventilation, grow lighting, and temperature sensing). It serves as a comprehensive study case demonstrating the proper design and utilization of **Abstract Classes**, **Interfaces**, **Inheritance**, and **Runtime Polymorphism**.
+
+```mermaid
+classDiagram
+    class Schedulable {
+        <<interface>>
+        +setSchedule(String time)* void
+    }
+
+    class GreenhouseDevice {
+        <<abstract>>
+        #deviceId : String
+        #deviceName : String
+        #isActive : boolean
+        +GreenhouseDevice(deviceId, deviceName)
+        +getDeviceId() String
+        +getDeviceName() String
+        +isActive() boolean
+        +turnOn() void
+        +turnOff() void
+        +displayStatus() void
+        +operate()* void
+    }
+
+    class IrrigationSystem {
+        -waterFlowRate : double
+        -scheduleTime : String
+        +IrrigationSystem(deviceId, deviceName, waterFlowRate)
+        +getWaterFlowRate() double
+        +setWaterFlowRate(rate) void
+        +setSchedule(time) void
+        +operate() void
+        +displayStatus() void
+    }
+
+    class VentilationSystem {
+        -fanSpeed : int
+        -scheduleTime : String
+        +VentilationSystem(deviceId, deviceName, fanSpeed)
+        +getFanSpeed() int
+        +setFanSpeed(speed) void
+        +setSchedule(time) void
+        +operate() void
+        +displayStatus() void
+    }
+
+    class GrowLight {
+        -lightIntensity : int
+        -scheduleTime : String
+        +GrowLight(deviceId, deviceName, lightIntensity)
+        +getLightIntensity() int
+        +setLightIntensity(intensity) void
+        +setSchedule(time) void
+        +operate() void
+        +displayStatus() void
+    }
+
+    class TemperatureSensor {
+        -sensorId : String
+        -currentTemperature : double
+        +TemperatureSensor(sensorId, currentTemperature)
+        +getCurrentTemperature() double
+        +setCurrentTemperature(temp) void
+        +checkAndAutomate(ventilation) void
+    }
+
+    GreenhouseDevice <|-- IrrigationSystem : extends
+    GreenhouseDevice <|-- VentilationSystem : extends
+    GreenhouseDevice <|-- GrowLight : extends
+
+    Schedulable <|.. IrrigationSystem : implements
+    Schedulable <|.. VentilationSystem : implements
+    Schedulable <|.. GrowLight : implements
+
+    TemperatureSensor ..> VentilationSystem : controls / triggers
+```
+
+### A. Abstract Class (`GreenhouseDevice`)
+An abstract class serves as an incomplete template that defines common state and behavior while leaving operational details to concrete subclasses:
+1. **Cannot be Instantiated Directly:**
+   - Attempting `new GreenhouseDevice(...)` produces a compiler error. It only exists to be extended by concrete devices.
+2. **Shared State & Concrete Methods:**
+   - Common fields (`deviceId`, `deviceName`, `isActive`) and power control methods (`turnOn()`, `turnOff()`, and `displayStatus()`) are written once in the superclass, eliminating redundant code.
+3. **Enforcing Operational Contracts (`abstract void operate()`):**
+   - Declares the abstract method `public abstract void operate();`, mandating that every concrete subclass must provide its own specific operational logic.
+
+---
+
+### B. Interface (`Schedulable`)
+An interface defines a pure behavioral contract representing a capability that classes can choose to fulfill:
+1. **Decoupled Capability:**
+   - The [`Schedulable`](src/SmartGreenHouse/Schedulable.java) interface defines `void setSchedule(String time);`. It guarantees that any class implementing it can receive automated operation timing.
+2. **Multiple Type Conformance:**
+   - All three devices (`IrrigationSystem`, `VentilationSystem`, `GrowLight`) implement `Schedulable`, allowing them to be treated uniformly by scheduling controllers regardless of their hardware hierarchy.
+
+---
+
+### C. Inheritance & Subclass Specialization
+1. **Specialized Attributes:**
+   - [`IrrigationSystem`](src/SmartGreenHouse/IrrigationSystem.java) manages `waterFlowRate` (L/min).
+   - [`VentilationSystem`](src/SmartGreenHouse/VentilationSystem.java) manages `fanSpeed` (RPM).
+   - [`GrowLight`](src/SmartGreenHouse/GrowLight.java) manages `lightIntensity` (%).
+2. **Constructor Chaining:**
+   - Each subclass constructor invokes `super(deviceId, deviceName)` to initialize the inherited superclass state.
+
+---
+
+### D. Polymorphism & Business Logic
+1. **Polymorphic Arrays (`GreenhouseDevice[]` & `Schedulable[]`):**
+   - Heterogeneous device objects are stored within a single `GreenhouseDevice[]` array. Calling `device.displayStatus()` and `device.operate()` inside a loop dynamically dispatches to the runtime object's implementation.
+   - The same objects are also handled as `Schedulable[]` to configure operational schedules polymorphically.
+2. **Business Rule Enforcement:**
+   - An inactive device (`isActive == false`) cannot operate. In `operate()`, each subclass validates that power is active before executing, displaying an operation failure warning if powered off.
+3. **Automated Feedback Loop (Bonus: `TemperatureSensor`):**
+   - [`TemperatureSensor`](src/SmartGreenHouse/TemperatureSensor.java) reads simulated temperature data. If the temperature exceeds the 30.0°C threshold, it automatically activates and operates the ventilation system to cool down the greenhouse.
+
+---
+
+## 2. Package `BankSystem` (Topic: Array & ArrayList)
 
 This package demonstrates how to store, manage, and manipulate collections of objects (*Array of Objects*) using both fixed-size primitive arrays and dynamic collections (`ArrayList`).
 
@@ -82,7 +203,7 @@ In [`BankAccountArrayBeraksi.java`](src/BankSystem/BankAccountArrayBeraksi.java)
 
 ---
 
-## 2. Package `Shapes` (Topic: Encapsulation, Inheritance, Polymorphism)
+## 3. Package `Shapes` (Topic: Encapsulation, Inheritance, Polymorphism)
 
 This package models a geometric shape hierarchy based on the class diagram to demonstrate the three core pillars of OOP.
 
@@ -175,7 +296,7 @@ Polymorphism allows methods to exhibit different behaviors depending on the actu
 
 ---
 
-## 3. Library Information & Build Instructions
+## 4. Library Information & Build Instructions
 
 * **External Dependencies:** **No third-party libraries or dependencies** are required.
 * **Standard Library:** The entire codebase is implemented in pure Java SE / JDK standard library (`java.lang.*`). No Maven or Gradle configurations or extra `.jar` files are needed.
@@ -185,6 +306,10 @@ Polymorphism allows methods to exhibit different behaviors depending on the actu
 Run the following commands from the root directory of the workspace:
 
 ```bash
+# Compile and run SmartGreenHouse (Abstract Class & Interface)
+javac -d bin src/SmartGreenHouse/*.java
+java -cp bin SmartGreenHouse.GreenhouseApp
+
 # Compile and run BankSystem
 javac -d bin src/BankSystem/*.java
 java -cp bin BankSystem.Main
@@ -194,36 +319,87 @@ javac -d bin src/Shapes/*.java
 java -cp bin Shapes.Main
 ```
 
-### Expected Output for `Shapes.Main`:
+### Expected Output for `SmartGreenHouse.GreenhouseApp`:
 ```text
-==================================================
-            PROGRAM PERHITUNGAN SHAPES            
-==================================================
+=================================================================
+         SMART GREENHOUSE AUTOMATION SYSTEM SIMULATION           
+=================================================================
 
---- Input Square ---
-Masukkan sisi (side): 10
-Masukkan warna (color): red
+>>> 1. INITIALIZING GREENHOUSE DEVICES
+Devices successfully created: Drip Irrigation Zone A, Exhaust Fan Greenhouse 1, Full-Spectrum LED Array
 
---- Input Circle ---
-Masukkan jari-jari (radius): 7
-Masukkan warna (color): blue
+>>> 2. CONFIGURING SCHEDULES (SCHEDULABLE INTERFACE CONTRACT)
+[SCHEDULE] Automated irrigation schedule for Drip Irrigation Zone A configured for: 06:00 AM & 05:00 PM
+[SCHEDULE] Automated ventilation schedule for Exhaust Fan Greenhouse 1 configured for: 11:30 AM
+[SCHEDULE] Automated lighting schedule for Full-Spectrum LED Array configured for: 06:00 PM
 
---- Input Cylinder ---
-Masukkan tinggi (height): 10
-Masukkan jari-jari (radius): 7
-Masukkan warna (color): yellow
+>>> 3. ACTIVATING DEVICES
+[STATUS] Device Drip Irrigation Zone A (DEV-IRR01) has been powered ON.
+[STATUS] Device Exhaust Fan Greenhouse 1 (DEV-VNT01) has been powered ON.
+[STATUS] Device Full-Spectrum LED Array (DEV-LGT01) has been powered ON.
 
-==================================================
-                 HASIL PERHITUNGAN                
-==================================================
-Square colored red, area = 100.0
-Circle blue, area = 153.86
-Cylinder yellow, volume = 1538.6
+>>> 4. MONITORING AND OPERATING DEVICES (POLYMORPHISM VIA ARRAY)
+-----------------------------------------------------------------
+Device ID    : DEV-IRR01
+Device Name  : Drip Irrigation Zone A
+Power Status : ACTIVE (ON)
+System Type  : Irrigation System
+Water Flow   : 12.5 L/min
+Schedule     : 06:00 AM & 05:00 PM
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[IRRIGATION OPERATION] Drip Irrigation Zone A is watering crops at a flow rate of 12.5 L/min.
+-----------------------------------------------------------------
+Device ID    : DEV-VNT01
+Device Name  : Exhaust Fan Greenhouse 1
+Power Status : ACTIVE (ON)
+System Type  : Ventilation System
+Fan Speed    : 1400 RPM
+Schedule     : 11:30 AM
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[VENTILATION OPERATION] Exhaust Fan Greenhouse 1 is circulating air at a fan speed of 1400 RPM.
+-----------------------------------------------------------------
+Device ID    : DEV-LGT01
+Device Name  : Full-Spectrum LED Array
+Power Status : ACTIVE (ON)
+System Type  : Grow Light (Photosynthesis)
+Intensity    : 80%
+Schedule     : 06:00 PM
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[GROW LIGHT OPERATION] Full-Spectrum LED Array is emitting full-spectrum light at 80% intensity.
+-----------------------------------------------------------------
+
+>>> 5. TESTING BUSINESS LOGIC: INACTIVE DEVICE CANNOT OPERATE
+Powering off irrigation system...
+[STATUS] Device Drip Irrigation Zone A (DEV-IRR01) has been powered OFF.
+Attempting to operate powered-off irrigation system:
+[OPERATION FAILED] Drip Irrigation Zone A (DEV-IRR01) cannot operate! The device is powered off.
+
+>>> 6. [BONUS] ENVIRONMENTAL TEMPERATURE SENSOR AUTOMATION
+[STATUS] Device Exhaust Fan Greenhouse 1 (DEV-VNT01) has been powered OFF.
+
+[Scenario 1: Normal Temperature]
+
+--- [TEMPERATURE SENSOR CHECK: SNS-TMP01] ---
+Current Temperature Reading: 28.0 °C
+[NORMAL STATUS] Temperature is within optimal range (<= 30.0°C). No intervention needed.
+
+[Scenario 2: Overheating Temperature (> 30.0°C)]
+
+--- [TEMPERATURE SENSOR CHECK: SNS-TMP02] ---
+Current Temperature Reading: 33.5 °C
+[AUTOMATION ALERT] Temperature exceeds threshold limit of 30.0°C (High heat detected!).
+[AUTOMATED ACTION] Automatically powering on ventilation system...
+[STATUS] Device Exhaust Fan Greenhouse 1 (DEV-VNT01) has been powered ON.
+[VENTILATION OPERATION] Exhaust Fan Greenhouse 1 is circulating air at a fan speed of 1400 RPM.
+
+=================================================================
+               SIMULATION COMPLETED SUCCESSFULLY                 
+=================================================================
 ```
 
 ---
 
-## 4. Program Execution Screenshots
+## 5. Program Execution Screenshots
 
 ### A. BankSystem Interactive ATM Flow
 
