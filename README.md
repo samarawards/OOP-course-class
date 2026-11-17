@@ -10,6 +10,7 @@ This repository contains practical assignment projects for the **Object-Oriented
 
 | Package | Core OOP Topic | Description |
 | :--- | :--- | :--- |
+| **`BiodataForm`** | **Java GUI (Swing & Event Handling)** | Student biodata registration GUI demonstrating Top-Level Containers (`JFrame`, `JOptionPane`), Intermediate Containers (`JPanel`), Atomic Components (`JLabel`, `JTextField`, `JButton`), Layout Managers (`GridLayout`, `FlowLayout`), and Event Handling via `ActionListener`. |
 | **`SmartGreenHouse`** | **Abstract Class & Interface** | Smart greenhouse automation system simulating irrigation, ventilation, grow lighting, and temperature sensors using abstract classes, interfaces, inheritance, and polymorphism. |
 | **`BankSystem`** | **Array & ArrayList of Objects** | Bank customer and account management using fixed-size arrays and dynamic list manipulation (`ArrayList`). |
 | **`Shapes`** | **Encapsulation, Inheritance, & Polymorphism** | 2D and 3D geometric shape hierarchy implementing the three fundamental pillars of OOP. |
@@ -19,7 +20,93 @@ This repository contains practical assignment projects for the **Object-Oriented
 
 ---
 
-## 1. Package `SmartGreenHouse` (Topic: Abstract Class & Interface)
+## 1. Package `BiodataForm` (Topic: Java GUI Swing Components & Event Handling)
+
+This package implements an interactive **Student Biodata Registration Form** built using **Java Swing** and **AWT** in [`BiodataForm.java`](src/BiodataForm/BiodataForm.java). It serves as an exploration of the fundamental architecture of Java Graphical User Interface (GUI) applications, specifically covering all 5 required parts:
+1. **Top-Level Container Class** (`JFrame`, `JOptionPane`)
+2. **Intermediate Container Class** (`JPanel`)
+3. **Atomic Component Class** (`JLabel`, `JTextField`, `JButton`)
+4. **Layout Classes** (`GridLayout`, `FlowLayout` — minimum 2 Layout Classes)
+5. **Event Listener** (`ActionListener` interface method overriding via functional lambda)
+
+```mermaid
+graph TD
+    subgraph TopLevelContainer ["1. Top-Level Container (JFrame) - GridLayout(3, 1)"]
+        subgraph HeaderPanel ["2. Intermediate Container (header) - FlowLayout"]
+            L1["3. Atomic: JLabel ('Student Biodata')"]
+        end
+
+        subgraph FormPanel ["2. Intermediate Container (form) - GridLayout(4, 2)"]
+            L2["3. Atomic: JLabel ('First Name: ')"]
+            T1["3. Atomic: JTextField (txtFirstName)"]
+            L3["3. Atomic: JLabel ('Last Name: ')"]
+            T2["3. Atomic: JTextField (txtLastName)"]
+            L4["3. Atomic: JLabel ('Birth Date: ')"]
+            T3["3. Atomic: JTextField (txtBirthDate)"]
+            L5["3. Atomic: JLabel ('Gender: ')"]
+            T4["3. Atomic: JTextField (txtGender)"]
+        end
+
+        subgraph ButtonPanel ["2. Intermediate Container (button) - FlowLayout"]
+            B1["3. Atomic: JButton ('Submit')"]
+            B2["3. Atomic: JButton ('Exit')"]
+        end
+    end
+
+    subgraph EventListeners ["5. Event Listener (ActionListener Interface)"]
+        B1 -->|Click: addActionListener| E1["actionPerformed(ActionEvent e) via Lambda<br>-> Validates inputs & triggers JOptionPane"]
+        B2 -->|Click: addActionListener| E2["actionPerformed(ActionEvent e) via Lambda<br>-> Shows exit confirmation & exits"]
+    end
+```
+
+### Exploration Requirements: 5 GUI Components / Parts Breakdown
+
+#### A. Top-Level Container Class
+Top-level containers provide the native OS window frame and heavy-weight display canvas required to host intermediate containers and visual components:
+* **`JFrame` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L10-L12)):**
+  - Serves as the master window frame titled `"Student Biodata Form"`.
+  - Configured with `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`, initial dimensions `setSize(500, 500)`, and rendered visible via `frame.setVisible(true)`.
+* **`JOptionPane` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L58-L92)):**
+  - Dialog-based top-level popup containers for interactive modal alerts:
+    - `JOptionPane.showMessageDialog` with `WARNING_MESSAGE` when input fields are empty.
+    - `JOptionPane.showMessageDialog` with `INFORMATION_MESSAGE` displaying submitted biodata.
+    - `JOptionPane.showConfirmDialog` with `OK_CANCEL_OPTION` when prompting confirmation before exiting.
+
+#### B. Intermediate Container Class
+Intermediate containers are lightweight components whose role is to group, structure, and partition UI components into organized blocks before adding them to the top-level container:
+* **`JPanel` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L14,L17,L37)):**
+  - `header` panel: Holds the header title label using `FlowLayout`.
+  - `form` panel: Holds the 4 pairs of labels and text input fields using `GridLayout(4, 2)`.
+  - `button` panel: Holds the `Submit` and `Exit` buttons using `FlowLayout`.
+
+#### C. Atomic Component Class
+Atomic components are individual, non-container UI controls that interact directly with the user or display content:
+* **`JLabel` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L15,L25,L28,L31,L34)):**
+  - Displays non-editable descriptive text (`"Student Biodata"`, `"First Name: "`, `"Last Name: "`, `"Birth Date: "`, `"Gender: "`).
+* **`JTextField` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L20-L23)):**
+  - Provides editable single-line input boxes allowing users to type personal biodata (`txtFirstName`, `txtLastName`, `txtBirthDate`, `txtGender`).
+* **`JButton` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L39-L40)):**
+  - Clickable action triggers (`btnSubmit` to validate and submit data; `btnExit` to prompt for program exit).
+
+#### D. Layout Classes (Minimum 2 Layout Classes)
+Layout managers govern the spatial positioning, sizing, and arrangement of components inside containers. The code implements **two (2)** distinct layout classes:
+1. **`FlowLayout` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L14,L37)):**
+   - Applied to `header` panel (`new FlowLayout()`) and `button` panel (`new FlowLayout()`) to arrange elements sequentially in a centered row.
+2. **`GridLayout` ([`src/BiodataForm/BiodataForm.java`](src/BiodataForm/BiodataForm.java#L17,L100)):**
+   - Applied to `form` panel (`new GridLayout(4, 2)`) to arrange labels and text fields in a strict 4-row by 2-column tabular grid.
+   - Applied to the main `frame` (`new GridLayout(3, 1)`) to vertically divide the window into 3 equal rows for `header`, `form`, and `button` panels.
+
+#### E. Event Listener (Event Method Override from Event Listener Interface)
+Event handling links visual components to program actions:
+* **Event Listener Interface (`ActionListener`):**
+  - Registered on `btnSubmit` ([line 46](src/BiodataForm/BiodataForm.java#L46)) and `btnExit` ([line 84](src/BiodataForm/BiodataForm.java#L84)) via `.addActionListener(...)`.
+  - In Java 8+, the lambda expression `e -> { ... }` implements the `ActionListener` Functional Interface (Single Abstract Method) and overrides its abstract method `void actionPerformed(ActionEvent e)`:
+    - **`btnSubmit` Action Logic:** Retrieves trimmed text from all `JTextField`s, checks for empty values, displays a warning dialog if invalid, or displays an information dialog with the submitted biodata and clears the fields.
+    - **`btnExit` Action Logic:** Displays a confirmation dialog (`JOptionPane.showConfirmDialog`) and invokes `System.exit(0)` if confirmed.
+
+---
+
+## 2. Package `SmartGreenHouse` (Topic: Abstract Class & Interface)
 
 This package models a **Smart Greenhouse Automation System** designed to monitor and automate environmental control devices (irrigation, ventilation, grow lighting, and temperature sensing). It serves as a comprehensive study case demonstrating the proper design and utilization of **Abstract Classes**, **Interfaces**, **Inheritance**, and **Runtime Polymorphism**.
 
@@ -139,7 +226,7 @@ An interface defines a pure behavioral contract representing a capability that c
 
 ---
 
-## 2. Package `BankSystem` (Topic: Array & ArrayList)
+## 3. Package `BankSystem` (Topic: Array & ArrayList)
 
 This package demonstrates how to store, manage, and manipulate collections of objects (*Array of Objects*) using both fixed-size primitive arrays and dynamic collections (`ArrayList`).
 
@@ -203,7 +290,7 @@ In [`BankAccountArrayBeraksi.java`](src/BankSystem/BankAccountArrayBeraksi.java)
 
 ---
 
-## 3. Package `Shapes` (Topic: Encapsulation, Inheritance, Polymorphism)
+## 4. Package `Shapes` (Topic: Encapsulation, Inheritance, Polymorphism)
 
 This package models a geometric shape hierarchy based on the class diagram to demonstrate the three core pillars of OOP.
 
@@ -296,16 +383,20 @@ Polymorphism allows methods to exhibit different behaviors depending on the actu
 
 ---
 
-## 4. Library Information & Build Instructions
+## 5. Library Information & Build Instructions
 
 * **External Dependencies:** **No third-party libraries or dependencies** are required.
-* **Standard Library:** The entire codebase is implemented in pure Java SE / JDK standard library (`java.lang.*`). No Maven or Gradle configurations or extra `.jar` files are needed.
+* **Standard Library:** The entire codebase is implemented in pure Java SE / JDK standard library (`java.lang.*`, `javax.swing.*`, `java.awt.*`). No Maven or Gradle configurations or extra `.jar` files are needed.
 
 ### Compilation and Execution:
 
 Run the following commands from the root directory of the workspace:
 
 ```bash
+# Compile and run BiodataForm (Java Swing GUI)
+javac -d bin src/BiodataForm/*.java
+java -cp bin BiodataForm.BiodataForm
+
 # Compile and run SmartGreenHouse (Abstract Class & Interface)
 javac -d bin src/SmartGreenHouse/*.java
 java -cp bin SmartGreenHouse.GreenhouseApp
@@ -399,9 +490,33 @@ Current Temperature Reading: 33.5 °C
 
 ---
 
-## 5. Program Execution Screenshots
+## 6. Program Execution Screenshots
 
-### A. BankSystem Interactive ATM Flow
+### A. BiodataForm GUI Application Flow
+
+#### 1. Main Student Biodata Form Interface
+Demonstrates the main GUI window rendered inside a `JFrame` with three `JPanel` intermediate containers (`header`, `form`, `button`) arranged via `GridLayout(3, 1)` on the frame, `GridLayout(4, 2)` on the form, and `FlowLayout` on the header and button panels:
+
+![Biodata Form Main Window](screenshots/biodata_form_main.png)
+
+#### 2. Input Validation (Empty Fields Warning Dialog)
+Demonstrates event-triggered input validation via `JOptionPane.showMessageDialog` (`WARNING_MESSAGE`) when any field is left empty:
+
+![Empty Fields Warning](screenshots/biodata_form_empty_warning.png)
+
+#### 3. Successful Data Submission Dialog
+Demonstrates event handling on `btnSubmit` overriding `actionPerformed(ActionEvent e)` via lambda to read `JTextField` values, reset inputs, and present a formatted confirmation dialog:
+
+![Submission Success](screenshots/biodata_form_success.png)
+
+#### 4. Exit Confirmation Dialog
+Demonstrates an exit confirmation modal dialog (`JOptionPane.showConfirmDialog`) triggered when clicking the `Exit` button:
+
+![Exit Confirmation Dialog](screenshots/biodata_form_exit_dialog.png)
+
+---
+
+### B. BankSystem Interactive ATM Flow
 
 #### 1. Adding a New Customer & Viewing Customer List (Menu 2 & Menu 1)
 Demonstrates dynamically adding a customer into the `Bank.customers` array and displaying all registered customers:
